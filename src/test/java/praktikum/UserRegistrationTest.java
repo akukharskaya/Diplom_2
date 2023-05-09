@@ -1,20 +1,17 @@
 package praktikum;
 
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
-import praktikum.service.UserService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static praktikum.service.UserService.randomUser;
 
-public class UserTest extends BaseTest{
-    UserService userService = new UserService();
-    UserRequest existingUser = new UserRequest("jimmy.berge@yahoo.com",
-            "c531d4d72ab23484254ea24aea649c1a50e1bc6c",
-            "jasper.rempel");
+public class UserRegistrationTest extends BaseTest{
 
     @Test
+    @DisplayName("Создание уникального пользователя")
     public void testCreateUserSuccess() {
         var user = randomUser();
         Response response = userService.registerUser(user);
@@ -29,6 +26,7 @@ public class UserTest extends BaseTest{
     }
 
     @Test
+    @DisplayName("Регистрация авторизованного пользователя")
     public void testCreateUserFailOnUserExists() {
         var user = existingUser;
         Response response = userService.registerUser(user);
@@ -42,6 +40,7 @@ public class UserTest extends BaseTest{
     }
 
     @Test
+    @DisplayName("Регистрация пользователя с пустым паролем")
     public void testCreateUserFailOnMissingPassword() {
         var user = randomUser();
         user.setPassword(null);

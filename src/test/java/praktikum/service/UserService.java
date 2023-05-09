@@ -1,6 +1,5 @@
 package praktikum.service;
 
-import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import praktikum.UserRequest;
@@ -9,10 +8,9 @@ import static io.restassured.RestAssured.given;
 
 public class UserService extends BaseService {
     public static final String PATH_REGISTRATION = "/api/auth/register";
-    public static final String PATH_AUTH = "/api/auth/login";
-    public static final String PATH_DELETE = "/api/auth/user";
+    public static final String PATH_LOGIN = "/api/auth/login";
+    public static final String PATH_USER = "/api/auth/user";
 
-    @Step
     public Response registerUser(UserRequest userRequest) {
         return given()
                 .header("Content-type", "application/json")
@@ -35,7 +33,7 @@ public class UserService extends BaseService {
                 .header("Authorization", token)
                 .and()
                 .when()
-                .delete(PATH_DELETE)
+                .delete(PATH_USER)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.SC_ACCEPTED);
@@ -47,13 +45,36 @@ public class UserService extends BaseService {
                 .and()
                 .body(userRequest)
                 .when()
-                .post(PATH_AUTH);
+                .post(PATH_LOGIN);
+    }
+
+    public Response updateUser(String token, UserRequest updateRequest){
+
+        return given()
+                .header("Content-type", "application/json")
+                .header("Authorization", token)
+                .and()
+                .when()
+                .body(updateRequest)
+                .patch(PATH_USER);
+
+    }
+
+    public Response getInfo(String token){
+
+        return given()
+                .header("Content-type", "application/json")
+                .header("Authorization", token)
+                .and()
+                .when()
+                .get(PATH_USER);
+
     }
 
     public static UserRequest randomUser() {
         return UserRequest.builder()
                 .email(faker.internet().emailAddress())
-                .name(faker.name().username())
+                .name(faker.name().firstName())
                 .password(faker.crypto().sha1())
                 .build();
     }
